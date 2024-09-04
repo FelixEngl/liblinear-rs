@@ -21,6 +21,12 @@ use liblinear_macros::{
     SupportsInitialSolutions, SupportsParameterSearch,
 };
 
+#[cfg(feature = "serde")]
+use crate::{
+    Parameters,
+    parameter::serde::{GenericParameters, SupportsParametersCreation}
+};
+
 /// Traits implemented by solvers.
 pub mod traits {
     use super::SolverOrdinal;
@@ -96,6 +102,14 @@ impl traits::Solver for L2R_LR {
         SolverOrdinal::L2R_LR
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_LR {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_initial_solution(params);
+        generic_params.set_bias_regularization(params);
+    }
+}
 
 /// L2-regularized L2-loss support vector classification (dual).
 #[allow(non_camel_case_types)]
@@ -104,6 +118,12 @@ pub struct L2R_L2LOSS_SVC_DUAL;
 impl traits::Solver for L2R_L2LOSS_SVC_DUAL {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::L2R_L2LOSS_SVC_DUAL
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L2LOSS_SVC_DUAL {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
     }
 }
 
@@ -125,6 +145,15 @@ impl traits::Solver for L2R_L2LOSS_SVC {
         SolverOrdinal::L2R_L2LOSS_SVC
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L2LOSS_SVC {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_initial_solution(params);
+        generic_params.set_bias_regularization(params);
+    }
+}
+
 
 /// L2-regularized L1-loss support vector classification (dual).
 #[allow(non_camel_case_types)]
@@ -133,6 +162,12 @@ pub struct L2R_L1LOSS_SVC_DUAL;
 impl traits::Solver for L2R_L1LOSS_SVC_DUAL {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::L2R_L1LOSS_SVC_DUAL
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L1LOSS_SVC_DUAL {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
     }
 }
 
@@ -145,6 +180,12 @@ impl traits::Solver for MCSVM_CS {
         SolverOrdinal::MCSVM_CS
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for MCSVM_CS {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+    }
+}
 
 /// L1-regularized L2-loss support vector classification.
 #[allow(non_camel_case_types)]
@@ -155,6 +196,13 @@ pub struct L1R_L2LOSS_SVC;
 impl traits::Solver for L1R_L2LOSS_SVC {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::L1R_L2LOSS_SVC
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L1R_L2LOSS_SVC {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_bias_regularization(params);
     }
 }
 
@@ -175,6 +223,13 @@ impl traits::Solver for L1R_LR {
         SolverOrdinal::L1R_LR
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L1R_LR {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_bias_regularization(params);
+    }
+}
 
 /// L2-regularized logistic regression (dual).
 #[allow(non_camel_case_types)]
@@ -185,6 +240,12 @@ pub struct L2R_LR_DUAL;
 impl traits::Solver for L2R_LR_DUAL {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::L2R_LR_DUAL
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_LR_DUAL {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
     }
 }
 
@@ -207,6 +268,15 @@ impl traits::Solver for L2R_L2LOSS_SVR {
         SolverOrdinal::L2R_L2LOSS_SVR
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L2LOSS_SVR {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_initial_solution(params);
+        generic_params.set_bias_regularization(params);
+        generic_params.set_regression_loss_sensitivity(params);
+    }
+}
 
 /// L2-regularized L2-loss support vector regression (dual).
 #[allow(non_camel_case_types)]
@@ -217,6 +287,13 @@ pub struct L2R_L2LOSS_SVR_DUAL;
 impl traits::Solver for L2R_L2LOSS_SVR_DUAL {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::L2R_L2LOSS_SVR_DUAL
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L2LOSS_SVR_DUAL {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_regression_loss_sensitivity(params);
     }
 }
 
@@ -231,6 +308,13 @@ impl traits::Solver for L2R_L1LOSS_SVR_DUAL {
         SolverOrdinal::L2R_L1LOSS_SVR_DUAL
     }
 }
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for L2R_L1LOSS_SVR_DUAL {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_regression_loss_sensitivity(params);
+    }
+}
 
 /// One-class support vector machine (dual).
 #[allow(non_camel_case_types)]
@@ -239,6 +323,13 @@ pub struct ONECLASS_SVM;
 impl traits::Solver for ONECLASS_SVM {
     fn ordinal() -> SolverOrdinal {
         SolverOrdinal::ONECLASS_SVM
+    }
+}
+#[cfg(feature = "serde")]
+impl SupportsParametersCreation for ONECLASS_SVM {
+    fn configure_parameters(generic_params: &GenericParameters, params: &mut Parameters<Self>) where Self: Sized {
+        generic_params.set_trainable(params);
+        generic_params.set_outlier_ratio(params);
     }
 }
 
