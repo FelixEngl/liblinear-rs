@@ -27,7 +27,6 @@ pub mod traits {
         solver::SolverOrdinal,
         util::{PredictionInput, TrainingInput},
     };
-    use crate::model::LabelsOrClassCount;
 
     /// Common methods implemented by all [`Model`](super::Model)s.
     pub trait ModelBase {
@@ -66,7 +65,7 @@ pub mod traits {
         fn bias(&self) -> f64;
 
         /// Returns the labels/classes learned by the model.
-        fn labels(&self) -> &LabelsOrClassCount;
+        fn labels(&self) -> Option<&Vec<i32>>;
 
         /// Returns the number of classes of the model.
         ///
@@ -192,32 +191,21 @@ struct BackingStore {
 pub struct Model<SolverT> {
     _solver: PhantomData<SolverT>,
     training_storage: Option<BackingStore>,
-    learned_labels: LabelsOrClassCount,
+    learned_labels: Option<Vec<i32>>,
     c_obj: *mut ffi::Model,
 }
 
 
-/// Either contains the labels or the class count of the model
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum LabelsOrClassCount {
-    Labels(Vec<i32>),
-    ClassCount(i32)
-}
-
-impl LabelsOrClassCount {
-    fn extract_from_model(model: *mut ffi::Model) -> Self {
-        unsafe {
-            if (*model).label.is_null() {
-                Self::ClassCount((*model).nr_class)
-            } else {
-                let mut learned_labels = Vec::<i32>::new();
-                unsafe {
-                    for i in 0..(*model).nr_class {
-                        learned_labels.push(*(*model).label.offset(i as isize));
-                    }
-                }
-                Self::Labels(learned_labels)
+fn extract_learned_labels_from_model(model: *mut ffi::Model) -> Option<Vec<i32>> {
+    unsafe {
+        if (*model).label.is_null() {
+            None
+        } else {
+            let mut learned_labels = Vec::<i32>::new();
+            for i in 0..(*model).nr_class {
+                learned_labels.push(*(*model).label.offset(i as isize));
             }
+            Some(learned_labels)
         }
     }
 }
@@ -460,8 +448,8 @@ where
         unsafe { (*self.c_obj).bias }
     }
 
-    fn labels(&self) -> &LabelsOrClassCount {
-        &self.learned_labels
+    fn labels(&self) -> Option<&Vec<i32>> {
+        self.learned_labels.as_ref()
     }
 
     fn num_classes(&self) -> u32 {
@@ -500,9 +488,7 @@ where
         let c_obj = unsafe { ffi::train(&problem, &parameter) };
         assert!(!c_obj.is_null(), "ffi::train() returned a NULL pointer");
 
-        let learned_labels = unsafe{LabelsOrClassCount::extract_from_model(c_obj)};
-
-
+        let learned_labels = unsafe{extract_learned_labels_from_model(c_obj)};
 
         Ok(Self {
             _solver: PhantomData,
@@ -650,7 +636,7 @@ pub mod serde {
         solver::{traits::IsTrainableSolver, GenericSolver},
     };
 
-    use super::{LabelsOrClassCount, Model};
+    use super::{extract_learned_labels_from_model, Model};
 
     /// Loads a serialized model from disk.
     ///
@@ -669,7 +655,7 @@ pub mod serde {
             ));
         }
 
-        let learned_labels = unsafe{LabelsOrClassCount::extract_from_model(c_obj)};
+        let learned_labels = unsafe{extract_learned_labels_from_model(c_obj)};
 
         Ok(Model {
             _solver: PhantomData,

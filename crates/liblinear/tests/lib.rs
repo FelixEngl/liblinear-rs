@@ -148,7 +148,7 @@ fn test_model_save_load() {
 
     assert_eq!(model.num_classes(), 2);
     assert_eq!(model.bias(), 10.2);
-    assert_eq!(model.labels(), &model_labels);
+    assert_eq!(model.labels(), model_labels);
 
     let _: Model<L1R_LR> = model
         .try_into()
