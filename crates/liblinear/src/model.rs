@@ -488,7 +488,7 @@ where
         let c_obj = unsafe { ffi::train(&problem, &parameter) };
         assert!(!c_obj.is_null(), "ffi::train() returned a NULL pointer");
 
-        let learned_labels = unsafe{extract_learned_labels_from_model(c_obj)};
+        let learned_labels = extract_learned_labels_from_model(c_obj);
 
         Ok(Self {
             _solver: PhantomData,
@@ -655,7 +655,7 @@ pub mod serde {
             ));
         }
 
-        let learned_labels = unsafe{extract_learned_labels_from_model(c_obj)};
+        let learned_labels = extract_learned_labels_from_model(c_obj);
 
         Ok(Model {
             _solver: PhantomData,
