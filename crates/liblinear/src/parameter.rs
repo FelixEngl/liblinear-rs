@@ -235,7 +235,7 @@ pub mod serde {
     use crate::errors::ModelError;
     use crate::parameter::traits::{SetBiasRegularization, SetInitialSolutions, SetOutlierRatio, SetRegressionLossSensitivity};
     use crate::Parameters;
-    use crate::solver::traits::{CanDisableBiasRegularization, IsSingleClassSolver, IsSupportVectorRegressionSolver, IsTrainableSolver, Solver, SupportsInitialSolutions};
+    use crate::solver::traits::{CanDisableBiasRegularization, IsSingleClassSolver, IsSupportVectorRegressionSolver, IsTrainableSolver, SupportsInitialSolutions};
 
     /// Allows to create parameters from the serializable variant
     pub trait SupportsParametersCreation: IsTrainableSolver + Clone {
